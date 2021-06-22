@@ -11,7 +11,7 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream =>{
-addVideoStream(myVideo, stream)
+    addVideoStream(myVideo, stream)
 })
 
 myPeer.on('open', id => {
@@ -22,8 +22,9 @@ socket.on('user-connected', userId => {
 console.log('user connected: ' + userId)
 })
 function addVideoStream(video, stream){
-    video.srcObject = streamvideo.addEventListner('loadedmetadata', () =>{
-        video.play()
+    video.srcObject = stream
+    video.addEventListener('loadedmetadata', () => {
+    video.play()
     })
     videoGrid.append(video)
 }
