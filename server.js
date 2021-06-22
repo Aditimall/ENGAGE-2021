@@ -21,6 +21,9 @@ io.on('connection',socket =>{
         console.log(roomId, userId)
         socket.join(roomId)
         socket.broadcast.to(roomId).emit('user-connected', userId)
-    })
+
+        socket.on('disconnect', () => {
+        socket.to(roomId),broadcast.emit('user-disconnected', userId)
+        })
 })
 server.listen(3000)
