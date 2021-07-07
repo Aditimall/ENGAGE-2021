@@ -4,7 +4,9 @@ const myPeer = new Peer(undefined)
 const myVideo = document.createElement('video')
 myVideo.muted = true
 const peers = {}
-let stream_obj={}
+
+const mic=document.getElementById('mic')
+
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -13,9 +15,18 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', userId => { 
         connectToNewUser(userId, stream)
     })
+    
+    myPeer.on('call',call=>{
+        call.answer(stream)
+        const video = document.createElement('video')
+        call.on('stream', userVideoStream => {
+            addVideoStream(video, userVideoStream)
+
+        })
+    })
 })
 
-myPeer.on('call',call=>{
+/* myPeer.on('call',call=>{
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
@@ -27,10 +38,12 @@ myPeer.on('call',call=>{
 
         })
     })
-})
+}) */
 
 socket.on('user-disconnected', userId => {
-    if(peers[userId]) peers[userId].close()
+    if(peers[userId]){
+        peers[userId].close()
+    }
 })
 
 myPeer.on('open', id => {
@@ -56,3 +69,14 @@ function addVideoStream(video, stream){
     })
     videoGrid.append(video)
 }
+
+mic.addEventListener('click',()=>{
+    if(a===true){
+        a=false
+        mic.src="mic_off.svg"
+    }
+    else{
+        a=true
+        mic.src="mic_on.svg"
+    }
+})
