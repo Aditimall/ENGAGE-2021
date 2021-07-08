@@ -15,18 +15,9 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', userId => { 
         connectToNewUser(userId, stream)
     })
-    
-    myPeer.on('call',call=>{
-        call.answer(stream)
-        const video = document.createElement('video')
-        call.on('stream', userVideoStream => {
-            addVideoStream(video, userVideoStream)
-
-        })
-    })
 })
 
-/* myPeer.on('call',call=>{
+myPeer.on('call',call=>{
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
@@ -38,7 +29,7 @@ navigator.mediaDevices.getUserMedia({
 
         })
     })
-}) */
+}) 
 
 socket.on('user-disconnected', userId => {
     if(peers[userId]){
@@ -71,6 +62,7 @@ function addVideoStream(video, stream){
 }
 
 mic.addEventListener('click',()=>{
+    myStream.getAudioTracks()[0].enabled = !(myStream.getAudioTracks()[0].enabled);
     if(a===true){
         a=false
         mic.src="mic_off.svg"
