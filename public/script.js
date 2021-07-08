@@ -60,15 +60,3 @@ function addVideoStream(video, stream){
     })
     videoGrid.append(video)
 }
-
-mic.addEventListener('click',()=>{
-    myStream.getAudioTracks()[0].enabled = !(myStream.getAudioTracks()[0].enabled);
-    if(a===true){
-        a=false
-        mic.src="mic_off.svg"
-    }
-    else{
-        a=true
-        mic.src="mic_on.svg"
-    }
-})
