@@ -2,7 +2,11 @@ const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined)
 const myVideo = document.createElement('video')
+const container=document.getElementById('message-container');
+const form=document.getElementById('sent-container');
+const message=document.getElementById('message');
 myVideo.muted = true
+const name=prompt('Name')
 const peers = {}
 
 const mic=document.getElementById('mic')
@@ -12,9 +16,15 @@ navigator.mediaDevices.getUserMedia({
     audio: true
 }).then(stream =>{
     addVideoStream(myVideo, stream)
-    socket.on('user-connected', userId => { 
+    socket.on('user-connected',userId => { 
         connectToNewUser(userId, stream)
     })
+})
+
+socket.on('user-disconnected', userId => {
+    if(peers[userId]){
+        peers[userId].close()
+    }
 })
 
 myPeer.on('call',call=>{
@@ -31,15 +41,21 @@ myPeer.on('call',call=>{
     })
 }) 
 
-socket.on('user-disconnected', userId => {
-    if(peers[userId]){
-        peers[userId].close()
-    }
+myPeer.on('open', id => {
+    socket.emit('join-room', ROOM_ID, id,name)
 })
 
-myPeer.on('open', id => {
-    socket.emit('join-room', ROOM_ID, id)
-})
+socket.on('new message',(data)=>{
+    if(data.user!==name)
+        container.appendChild(document.createElement('div')).innerHTML=data.user+": "+data.message;
+});
+
+form.addEventListener('submit',f=>{
+    f.preventDefault();
+    socket.emit('message',message.value);
+    container.appendChild(document.createElement('div')).innerHTML="You : " +message.value;
+    message.value='';
+});
 
 function connectToNewUser(userId, stream) {
     const call = myPeer.call(userId,stream)

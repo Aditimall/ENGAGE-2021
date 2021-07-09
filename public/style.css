@@ -22,3 +22,8 @@ video{
 #mic{
     cursor:pointer;
 }
+#chat-container{
+    background-color: gainsboro;
+    position: absolute;
+    right: 0;
+}

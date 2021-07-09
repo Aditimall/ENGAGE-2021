@@ -16,17 +16,26 @@ app.get('/:room',(req,res)=>{
     res.render('room',{roomId: req.params.room})
 })
 
-
 io.on('connection',socket =>{
-    socket.on('join-room', (roomId, userId) =>{
+
+    socket.on('join-room', (roomId, userId,name) =>{
         console.log(roomId, userId)
+        socket.id=name
         socket.join(roomId)
         socket.broadcast.to(roomId).emit('user-connected', userId)
 
         socket.on('disconnect', () => {
-        socket.broadcast.to(roomId).emit('user-disconnected', userId)
+            socket.broadcast.to(roomId).emit('user-disconnected', userId)
         })
-})
+
+        socket.on('message',data=>{
+            io.emit('new message',{
+              user:socket.id,
+              message:data
+            });
+        });
+    })
+
 })
 const port=process.env.PORT||3000
 server.listen(port)
