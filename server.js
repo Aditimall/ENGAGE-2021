@@ -3,6 +3,7 @@ const app=express()
 const server=require('http').Server(app)
 const io=require('socket.io')(server)
 const {v4: uuidV4 }=require('uuid')
+var users={}
 
 app.set('view engine','ejs')
 
@@ -20,8 +21,9 @@ io.on('connection',socket =>{
 
     socket.on('join-room', (roomId, userId,name) =>{
         console.log(roomId, userId)
-        socket.id=name
         socket.join(roomId)
+        users[userId]=name
+
         socket.broadcast.to(roomId).emit('user-connected', userId)
 
         socket.on('disconnect', () => {
@@ -30,7 +32,7 @@ io.on('connection',socket =>{
 
         socket.on('message',data=>{
             io.emit('new message',{
-              user:socket.id,
+              user:users[userId],
               message:data
             });
         });
